@@ -20,36 +20,26 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        // VVVVVV  *********************************************************** VVVVVV
+        // VVVVVV  CRITICAL: REPLACE THESE PLACEHOLDER VALUES WITH YOUR ACTUAL  VVVVVV
+        // VVVVVV  FIREBASE PROJECT CONFIGURATION! This is the most common issue. VVVVVV
+        // ==============================================================================
+        // Find these values in your Firebase Console:
+        // Project settings (gear icon) -> Project settings -> General -> Your apps -> Web app
+        // Copy the "Config" snippet EXACTLY.
+        // ==============================================================================
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyA_sSf9uhzs8xKIK8Ne_3UBz3u9VcT9C9o",
+          authDomain: "belita-and-samuel.firebaseapp.com",
+          projectId: "belita-and-samuel",
+          storageBucket: "belita-and-samuel.firebasestorage.app",
+          messagingSenderId: "859679733503",
+          appId: "1:859679733503:web:c265042d56863f4397feca",
+          measurementId: "G-CWRVY05BEX"
+        };
+        // ^^^^^^  *********************************************************** ^^^^^^
 
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyA_sSf9uhzs8xKIK8Ne_3UBz3u9VcT9C9o",
-    authDomain: "belita-and-samuel.firebaseapp.com",
-    projectId: "belita-and-samuel",
-    storageBucket: "belita-and-samuel.firebasestorage.app",
-    messagingSenderId: "859679733503",
-    appId: "1:859679733503:web:c265042d56863f4397feca",
-    measurementId: "G-CWRVY05BEX"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-        
         console.log("Firebase config being used:", firebaseConfig); // Log config for debugging
 
         // Initialize Firebase app
@@ -77,7 +67,7 @@ import { getAnalytics } from "firebase/analytics";
 
         // Use a consistent app ID for your data in Firestore.
         // This should be a unique string, often your Firebase projectId works well.
-        window.firestoreAppId = firebaseConfig.projectId || "belita-and-samuel";
+        window.firestoreAppId = firebaseConfig.projectId || "belita-samuel-wedding-app";
         
         console.log("Firebase initialized successfully in head script.");
         console.log("Firebase Config in head:", firebaseConfig); // For debugging
@@ -124,7 +114,7 @@ import { getAnalytics } from "firebase/analytics";
           </svg>
         );
 
-        // Specific Icon SVGs (unchanged for brevity, but they are here)
+        // Specific Icon SVGs
         const FlowerIcon = ({ className, color }) => (
           <Icon className={className} color={color}>
             <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zM12 11a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1zm3.894-3.414a1 1 0 01-1.414 1.414l-2.828-2.828a1 1 0 011.414-1.414l2.828 2.828zM8.106 8.586a1 1 0 01-1.414-1.414l2.828-2.828a1 1 0 011.414 1.414l-2.828 2.828zM15.414 15.894a1 1 0 01-1.414 1.414l-2.828-2.828a1 1 0 011.414-1.414l2.828 2.828zM8.586 15.414a1 1 0 01-1.414 1.414l-2.828-2.828a1 1 0 011.414-1.414l2.828 2.828z" clipRule="evenodd" />
@@ -211,40 +201,42 @@ import { getAnalytics } from "firebase/analytics";
 
 
           useEffect(() => {
-            // Ensure Firebase instances are available before setting state
+            // Initialize Firebase and set up auth listener
+            // Check if window.db and window.auth are defined from the module script in head
             if (window.db && window.auth) {
                 setDbInstance(window.db);
                 setAuthInstance(window.auth);
 
-                // Setup auth listener to manage user ID
-                const unsubscribeAuth = window.firebase.auth.onAuthStateChanged(window.auth, async (user) => {
+                const unsubscribe = window.firebase.auth.onAuthStateChanged(window.auth, async (user) => {
                     if (user) {
                         setUserId(user.uid);
                         console.log("User signed in:", user.uid);
                     } else {
-                        // Attempt anonymous sign-in if no user is found
+                        // Sign in anonymously if no user is found
                         try {
-                            // No need to pass 'auth' here, as window.firebase.auth.signInAnonymously already has context
-                            await window.firebase.auth.signInAnonymously(window.auth); 
+                            await window.firebase.auth.signInAnonymously(window.auth);
                             setUserId(window.auth.currentUser.uid);
                             console.log("Signed in anonymously:", window.auth.currentUser.uid);
                         } catch (error) {
                             console.error("Error during anonymous sign-in:", error);
-                            // Updated modal message to emphasize API key issue
-                            setModalMessage("Failed to sign in. Please ensure your Firebase API key is valid AND Anonymous Auth is enabled in Firebase Console.");
+                            setModalMessage(
+                                "Failed to sign in. This is usually due to an invalid Firebase API key or " +
+                                "Anonymous Authentication not being enabled in your Firebase Console. " +
+                                "Please double-check Project Settings -> General -> Your apps -> Web app config, " +
+                                "and Authentication -> Sign-in method -> Anonymous."
+                            );
                             setShowModal(true);
                             setUserId(crypto.randomUUID()); // Fallback ID if auth fails
                         }
                     }
                 });
-                return () => unsubscribeAuth();
+                return () => unsubscribe();
             } else {
-                console.error("Firebase instances (db, auth) not available in React useEffect. Check Firebase init script.");
+                console.error("Firebase instances (db, auth) not available in React useEffect. Check Firebase init script in the <head>.");
                 setModalMessage("Website is having trouble connecting to Firebase. Please check browser console for details.");
                 setShowModal(true);
             }
-          }, []); // Empty dependency array means this runs once on component mount
-
+          }, []);
 
           const handleRsvpChange = (e) => {
             const { name, value } = e.target;
@@ -256,22 +248,17 @@ import { getAnalytics } from "firebase/analytics";
 
           const handleRsvpSubmit = async (e) => {
             e.preventDefault();
-            // Check if Firebase is ready before attempting to submit
             if (!dbInstance || !userId) {
-              setModalMessage("Firebase is not fully initialized. Please wait a moment and try again.");
+              setModalMessage("Authentication not ready. Please wait a moment and try again.");
               setShowModal(true);
               return;
             }
 
             try {
-              // Access Firestore methods using the global window.firebase object.
-              await window.firebase.firestore.addDoc(
-                window.firebase.firestore.collection(dbInstance, `artifacts/${appId}/users/${userId}/rsvps`),
-                {
-                  ...rsvpDetails,
-                  timestamp: window.firebase.firestore.serverTimestamp(),
-                }
-              );
+              await window.firebase.firestore.addDoc(window.firebase.firestore.collection(dbInstance, `artifacts/${appId}/users/${userId}/rsvps`), {
+                ...rsvpDetails,
+                timestamp: window.firebase.firestore.serverTimestamp(),
+              });
               setShowRsvpConfirmation(true);
               setRsvpSubmitted(true);
               setModalMessage("Your RSVP has been submitted successfully!");
