@@ -36,7 +36,9 @@ const firebaseConfig = {
   appId: "1:859679733503:web:c265042d56863f4397feca",
   measurementId: "G-CWRVY05BEX"
 };
-
+        
+console.log("Firebase config being used:", firebaseConfig); // Log config for debugging
+        
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
