@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Belita & Samuel Wedding</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts for Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Babel for JSX transformation in browser -->
+    <!-- Babel for transforming JSX in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- React and ReactDOM CDNs -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs - Loaded as ES Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-// Import the functions you need from the SDKs you need
+        // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -29,36 +29,29 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyApsToDa7qNN4kOXe1rWwizOKSCxFrlALc",
-  authDomain: "samuel-and-belita.firebaseapp.com",
-  projectId: "samuel-and-belita",
-  storageBucket: "samuel-and-belita.firebasestorage.app",
-  messagingSenderId: "532824195549",
-  appId: "1:532824195549:web:d36da9e57cace2354ab634",
-  measurementId: "G-JLTMZQFXVL"
+  apiKey: "AIzaSyA_sSf9uhzs8xKIK8Ne_3UBz3u9VcT9C9o",
+  authDomain: "belita-and-samuel.firebaseapp.com",
+  projectId: "belita-and-samuel",
+  storageBucket: "belita-and-samuel.firebasestorage.app",
+  messagingSenderId: "859679733503",
+  appId: "1:859679733503:web:c265042d56863f4397feca",
+  measurementId: "G-CWRVY05BEX"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-        
+
         console.log("Firebase config being used:", firebaseConfig); // Log config for debugging
 
+        // Initialize Firebase app
         const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app); // Make db globally accessible
-        window.auth = getAuth(app); // Make auth globally accessible
 
-        // For GitHub Pages deployment, initialAuthToken might not be available.
-        // If you need specific user authentication beyond anonymous,
-        // you will need a backend to generate and provide a custom token.
-        const initialAuthToken = null; // Set to null for GitHub Pages deployment or replace with your token logic
-
-        // Use a consistent app ID for your data in Firestore.
-        // This should be unique to your specific GitHub Pages deployment.
-        const firestoreAppId = "samuel-belita-wedding-app";
-        window.firestoreAppId = firestoreAppId; // Make it globally accessible
-
-        // Store Firebase specific functions globally for easy access in the React component
+        // Expose Firebase services globally for the React script to access
+        window.db = getFirestore(app);
+        window.auth = getAuth(app);
+        
+        // Expose specific Firestore and Auth functions for the React component
         window.firebase = {
             firestore: {
                 collection: collection,
@@ -69,35 +62,36 @@ const analytics = getAnalytics(app);
             },
             auth: { // Expose auth specific functions
                 signInAnonymously: signInAnonymously,
-                signInWithCustomToken: signInWithCustomToken
+                signInWithCustomToken: signInWithCustomToken,
+                onAuthStateChanged: onAuthStateChanged // Also expose onAuthStateChanged
             }
         };
 
-        // Initial Firebase authentication setup
-        onAuthStateChanged(window.auth, async (user) => {
-            if (!user) {
-                try {
-                    if (initialAuthToken) {
-                        await window.firebase.auth.signInWithCustomToken(window.auth, initialAuthToken);
-                    } else {
-                        await window.firebase.auth.signInAnonymously(window.auth);
-                    }
-                } catch (error) {
-                    console.error("Firebase authentication failed:", error);
-                    // Handle auth error gracefully, perhaps show a message to the user
-                }
-            }
-        });
+        // Use a consistent app ID for your data in Firestore.
+        // This should be a unique string, often your Firebase projectId works well.
+        window.firestoreAppId = firebaseConfig.projectId || "belita-samuel-wedding-app";
+        
+        console.log("Firebase initialized successfully in head script.");
+        console.log("Firebase Config in head:", firebaseConfig); // For debugging
+        console.log("Firestore App ID in head:", window.firestoreAppId); // For debugging
     </script>
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            margin: 0; /* Ensure no default body margin */
+            padding: 0; /* Ensure no default body padding */
+        }
+        #root {
+            min-height: 100vh; /* Ensure the root div takes full viewport height */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-50 to-blue-50 font-sans text-gray-800 flex flex-col items-center p-4 min-h-screen">
-    <div id="root" class="w-full max-w-4xl flex-grow flex flex-col items-center"></div>
+<body class="bg-gradient-to-br from-pink-50 to-blue-50 font-sans text-gray-800 p-4">
+    <div id="root"></div>
 
     <script type="text/babel">
         // Ensure React and ReactDOM are available globally
@@ -105,10 +99,15 @@ const analytics = getAnalytics(app);
         const ReactDOM = window.ReactDOM;
         const { useState, useEffect } = React; // Destructure useState and useEffect from React
 
-        // Ensure Firebase instances and firestoreAppId are available globally after the module script loads
+        // Access Firebase instances and firestoreAppId from the global window object
         const db = window.db;
         const auth = window.auth;
-        const appId = window.firestoreAppId; // Use the globally defined appId from the Firebase init script
+        const appId = window.firestoreAppId;
+
+        console.log("React script started.");
+        console.log("DB instance in React:", db);
+        console.log("Auth instance in React:", auth);
+        console.log("App ID in React:", appId);
 
         // Reusable SVG Icon Component
         const Icon = ({ children, className = "w-6 h-6 mr-2", color = "currentColor" }) => (
@@ -117,7 +116,7 @@ const analytics = getAnalytics(app);
           </svg>
         );
 
-        // Specific Icon SVGs
+        // Specific Icon SVGs (unchanged for brevity, but they are here)
         const FlowerIcon = ({ className, color }) => (
           <Icon className={className} color={color}>
             <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 18c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8zM12 11a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1zm3.894-3.414a1 1 0 01-1.414 1.414l-2.828-2.828a1 1 0 011.414-1.414l2.828 2.828zM8.106 8.586a1 1 0 01-1.414-1.414l2.828-2.828a1 1 0 011.414 1.414l-2.828 2.828zM15.414 15.894a1 1 0 01-1.414 1.414l-2.828-2.828a1 1 0 011.414-1.414l2.828 2.828zM8.586 15.414a1 1 0 01-1.414 1.414l-2.828-2.828a1 1 0 011.414-1.414l2.828 2.828z" clipRule="evenodd" />
@@ -204,31 +203,40 @@ const analytics = getAnalytics(app);
 
 
           useEffect(() => {
-            // Initialize Firebase and set up auth listener
-            setDbInstance(db);
-            setAuthInstance(auth);
+            // Ensure Firebase instances are available before setting state
+            if (window.db && window.auth) {
+                setDbInstance(window.db);
+                setAuthInstance(window.auth);
 
-            const unsubscribe = auth.onAuthStateChanged(async (user) => {
-              if (user) {
-                setUserId(user.uid);
-              } else {
-                // Sign in anonymously if no user is found
-                try {
-                    // Use the globally exposed signInAnonymously function
-                    // Pass the 'auth' instance (which is already global) to the function call
-                    await window.firebase.auth.signInAnonymously(auth);
-                    setUserId(auth.currentUser.uid);
-                } catch (error) {
-                    console.error("Error signing in anonymously:", error);
-                    setModalMessage("Failed to sign in. Some features may not work. Please ensure your Firebase API key is valid.");
-                    setShowModal(true);
-                    setUserId(crypto.randomUUID()); // Generate a fallback ID
-                }
-              }
-            });
+                // Setup auth listener to manage user ID
+                const unsubscribeAuth = window.firebase.auth.onAuthStateChanged(window.auth, async (user) => {
+                    if (user) {
+                        setUserId(user.uid);
+                        console.log("User signed in:", user.uid);
+                    } else {
+                        // Attempt anonymous sign-in if no user is found
+                        try {
+                            // No need to pass 'auth' here, as window.firebase.auth.signInAnonymously already has context
+                            await window.firebase.auth.signInAnonymously(window.auth); 
+                            setUserId(window.auth.currentUser.uid);
+                            console.log("Signed in anonymously:", window.auth.currentUser.uid);
+                        } catch (error) {
+                            console.error("Error during anonymous sign-in:", error);
+                            // Updated modal message to emphasize API key issue
+                            setModalMessage("Failed to sign in. Please ensure your Firebase API key is valid AND Anonymous Auth is enabled in Firebase Console.");
+                            setShowModal(true);
+                            setUserId(crypto.randomUUID()); // Fallback ID if auth fails
+                        }
+                    }
+                });
+                return () => unsubscribeAuth();
+            } else {
+                console.error("Firebase instances (db, auth) not available in React useEffect. Check Firebase init script.");
+                setModalMessage("Website is having trouble connecting to Firebase. Please check browser console for details.");
+                setShowModal(true);
+            }
+          }, []); // Empty dependency array means this runs once on component mount
 
-            return () => unsubscribe();
-          }, []);
 
           const handleRsvpChange = (e) => {
             const { name, value } = e.target;
@@ -240,26 +248,29 @@ const analytics = getAnalytics(app);
 
           const handleRsvpSubmit = async (e) => {
             e.preventDefault();
+            // Check if Firebase is ready before attempting to submit
             if (!dbInstance || !userId) {
-              setModalMessage("Authentication not ready. Please try again in a moment.");
+              setModalMessage("Firebase is not fully initialized. Please wait a moment and try again.");
               setShowModal(true);
               return;
             }
 
             try {
               // Access Firestore methods using the global window.firebase object.
-              // This is necessary because the Firebase SDK is loaded as a module in the head.
-              await window.firebase.firestore.addDoc(window.firebase.firestore.collection(dbInstance, `artifacts/${appId}/users/${userId}/rsvps`), {
-                ...rsvpDetails,
-                timestamp: window.firebase.firestore.serverTimestamp(),
-              });
+              await window.firebase.firestore.addDoc(
+                window.firebase.firestore.collection(dbInstance, `artifacts/${appId}/users/${userId}/rsvps`),
+                {
+                  ...rsvpDetails,
+                  timestamp: window.firebase.firestore.serverTimestamp(),
+                }
+              );
               setShowRsvpConfirmation(true);
               setRsvpSubmitted(true);
               setModalMessage("Your RSVP has been submitted successfully!");
               setShowModal(true);
             } catch (error) {
               console.error("Error submitting RSVP:", error);
-              setModalMessage("Failed to submit RSVP. Please try again.");
+              setModalMessage("Failed to submit RSVP. Please try again. Ensure Firestore rules allow writes for authenticated users.");
               setShowModal(true);
             }
           };
@@ -633,17 +644,7 @@ const analytics = getAnalytics(app);
           };
 
           return (
-            <div className="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 font-sans text-gray-800 flex flex-col items-center p-4">
-              {/* This style block remains here to define custom CSS */}
-              <style>
-                {`
-                  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-                  body {
-                    font-family: 'Inter', sans-serif;
-                  }
-                `}
-              </style>
-
+            <div className="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 font-sans text-gray-800 p-4">
               {/* Navigation */}
               <nav className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-xl mb-6 flex flex-wrap justify-center gap-3">
                 <NavItem currentPage={currentPage} targetPage="welcome" setCurrentPage={setCurrentPage}>Welcome</NavItem>
@@ -699,6 +700,7 @@ const analytics = getAnalytics(app);
           );
         };
 
+        // Render the React App into the #root div
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
