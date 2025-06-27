@@ -20,17 +20,27 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
 
-        // IMPORTANT: YOU MUST REPLACE THESE PLACEHOLDER VALUES WITH YOUR ACTUAL FIREBASE CONFIGURATION.
-        // Failing to do so will result in "auth/api-key-not-valid" errors and prevent Firebase from working.
-        // Find your config in Firebase project settings -> Project settings -> General -> Your apps -> Web app.
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY", // <--- ***REPLACE THIS WITH YOUR ACTUAL API KEY***
-            authDomain: "YOUR_AUTH_DOMAIN", // <--- REPLACE THIS
-            projectId: "YOUR_PROJECT_ID", // <--- REPLACE THIS
-            storageBucket: "YOUR_STORAGE_BUCKET", // <--- REPLACE THIS
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // <--- REPLACE THIS
-            appId: "YOUR_APP_ID" // <--- REPLACE THIS
-        };
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyApsToDa7qNN4kOXe1rWwizOKSCxFrlALc",
+  authDomain: "samuel-and-belita.firebaseapp.com",
+  projectId: "samuel-and-belita",
+  storageBucket: "samuel-and-belita.firebasestorage.app",
+  messagingSenderId: "532824195549",
+  appId: "1:532824195549:web:d36da9e57cace2354ab634",
+  measurementId: "G-JLTMZQFXVL"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
         console.log("Firebase config being used:", firebaseConfig); // Log config for debugging
 
@@ -45,7 +55,7 @@
 
         // Use a consistent app ID for your data in Firestore.
         // This should be unique to your specific GitHub Pages deployment.
-        const firestoreAppId = "your-github-pages-app-id";
+        const firestoreAppId = "samuel-belita-wedding-app";
         window.firestoreAppId = firestoreAppId; // Make it globally accessible
 
         // Store Firebase specific functions globally for easy access in the React component
